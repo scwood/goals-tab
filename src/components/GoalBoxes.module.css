@@ -1,0 +1,24 @@
+.container {
+  padding: 8px;
+}
+
+.boxesContainer {
+  display: flex;
+  gap: 6px;
+}
+
+.box {
+  border: 2px double white;
+  outline: 1px solid #ced4da !important;
+  width: 44px;
+  height: 44px;
+  border-radius: .375rem;
+}
+
+.complete {
+  background-color: #198754;
+}
+
+.incomplete {
+  background-color: white;
+}
