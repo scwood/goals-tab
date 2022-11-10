@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/static/css/main.30e15840.css",
-    "main.js": "/static/js/main.6caf39f7.js",
-    "static/js/787.7a80a5a6.chunk.js": "/static/js/787.7a80a5a6.chunk.js",
-    "service-worker.js": "/service-worker.js",
-    "index.html": "/index.html",
-    "main.30e15840.css.map": "/static/css/main.30e15840.css.map",
-    "main.6caf39f7.js.map": "/static/js/main.6caf39f7.js.map",
-    "787.7a80a5a6.chunk.js.map": "/static/js/787.7a80a5a6.chunk.js.map"
+    "main.css": "/goal-tab/static/css/main.30e15840.css",
+    "main.js": "/goal-tab/static/js/main.5c1cf0a4.js",
+    "static/js/787.7a80a5a6.chunk.js": "/goal-tab/static/js/787.7a80a5a6.chunk.js",
+    "service-worker.js": "/goal-tab/service-worker.js",
+    "index.html": "/goal-tab/index.html",
+    "main.30e15840.css.map": "/goal-tab/static/css/main.30e15840.css.map",
+    "main.5c1cf0a4.js.map": "/goal-tab/static/js/main.5c1cf0a4.js.map",
+    "787.7a80a5a6.chunk.js.map": "/goal-tab/static/js/787.7a80a5a6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.30e15840.css",
-    "static/js/main.6caf39f7.js"
+    "static/js/main.5c1cf0a4.js"
   ]
 }
