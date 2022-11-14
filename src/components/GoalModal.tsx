@@ -1,62 +1,74 @@
 import { useState } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
+import {
+  Button,
+  Group,
+  Modal,
+  NumberInput,
+  Stack,
+  TextInput,
+} from "@mantine/core";
 
 import { Goal } from "./Goal";
 
 export interface GoalModalProps {
   goal?: Goal;
-  onClose?: () => void;
-  onSave?: (title: string, timesPlanned: number) => void;
-  onDelete?: () => void;
+  onClose: () => void;
+  onSaveNew: (title: string, timesPlanned: number) => void;
+  onSaveExisting: (goal: Goal, title: string, timesPlanned: number) => void;
 }
 
 export function GoalModal(props: GoalModalProps) {
-  const { goal, onClose, onSave, onDelete } = props;
-  const [title, setTitle] = useState(goal?.title || "");
-  const [timesPlannedString, setTimesPlannedString] = useState("3");
+  const { goal, onClose, onSaveNew, onSaveExisting } = props;
+  const [name, setName] = useState(goal?.name || "");
+  const [timesPlanned, setTimesPlanned] = useState<number | undefined>(
+    goal?.timesPlanned
+  );
 
-  const isValidTitle = title.length > 0;
-  const isValidTimesPlanned = parseInt(timesPlannedString) > 0;
-  const isValid = isValidTimesPlanned && isValidTitle;
+  const isValidName = name.length > 0;
+  const isValidTimesPlanned = timesPlanned !== undefined && timesPlanned > 0;
+  const isValid = isValidTimesPlanned && isValidName;
+
+  function handleSave() {
+    if (!isValid) {
+      return;
+    }
+    if (goal) {
+      onSaveExisting(goal, name, timesPlanned);
+    } else {
+      onSaveNew(name, timesPlanned);
+    }
+  }
 
   return (
-    <Modal show={true} size="sm" centered>
-      <Modal.Header>
-        <Modal.Title>{goal ? "Edit goal" : "Create goal"} </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form.Label>Goal name</Form.Label>
-        <Form.Control
-          className="mb-2"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
+    <Modal
+      title={goal ? "Edit goal" : "Create goal"}
+      opened={true}
+      onClose={onClose}
+      centered
+      size="xs"
+    >
+      <Stack>
+        <TextInput
+          withAsterisk
+          label="Goal name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
           placeholder="example: Go to the gym"
         />
-        <Form.Label>Times per week</Form.Label>
-        <Form.Control
-          value={timesPlannedString}
-          onChange={(event) => setTimesPlannedString(event.target.value)}
+        <NumberInput
+          withAsterisk
+          min={1}
+          label="Times per week"
+          value={timesPlanned}
+          onChange={(num) => setTimesPlanned(num)}
           placeholder="example: 3"
         />
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="light" size="sm" onClick={onClose}>
-          Close
-        </Button>
-        {goal && (
-          <Button variant="danger" size="sm" onClick={onDelete}>
-            Delete
-          </Button>
-        )}
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={() => onSave?.(title, parseInt(timesPlannedString))}
-          disabled={!isValid}
-        >
+      </Stack>
+      <Group position="right" mt="lg">
+        <Button onClick={handleSave} disabled={!isValid} color="green">
           Save
         </Button>
-      </Modal.Footer>
+      </Group>
     </Modal>
   );
 }

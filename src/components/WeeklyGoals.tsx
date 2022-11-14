@@ -1,87 +1,126 @@
-import { Button } from "react-bootstrap";
 import { useState } from "react";
-import { v4 as uuidV4 } from "uuid";
+import { Button, Group, Title } from "@mantine/core";
+import { IconPlus } from "@tabler/icons";
 
-import styles from "./WeeklyGoals.module.css";
-import { useLocalStorage } from "../hooks/useLocalStorage";
 import { Goal } from "./Goal";
 import { GoalModal } from "./GoalModal";
 import { GoalBoxes } from "./GoalBoxes";
+import { useWeeklyGoals } from "../hooks/useWeeklyGoals";
+import { GoalMenu } from "./GoalMenu";
+
+function swap<T>(arr: T[], i: number, j: number) {
+  const temp = arr[i];
+  arr[i] = arr[j];
+  arr[j] = temp;
+}
 
 export function WeeklyGoals() {
-  const [goals, setGoals] = useLocalStorage<Goal[]>("goals", []);
+  const { goals, createGoal, updateGoal, deleteGoal, setGoals } =
+    useWeeklyGoals();
   const [isGoalModalVisible, setIsGoalModalVisible] = useState(false);
-  const allGoalsComplete = goals.every(
-    (goal) => goal.timesCompleted === goal.timesPlanned
-  );
+  const [selectedGoal, setSelectedGoal] = useState<Goal | undefined>(undefined);
 
-  function handleSave(title: string, timesPlanned: number) {
-    setGoals((prev) => [
-      ...prev,
-      { id: uuidV4(), title, timesPlanned, timesCompleted: 0 },
-    ]);
-    handleClose();
+  const allGoalsComplete =
+    goals.length > 0 &&
+    goals.every((goal) => goal.timesCompleted === goal.timesPlanned);
+
+  function handleSaveNew(name: string, timesPlanned: number) {
+    createGoal(name, timesPlanned);
+    handleCloseModal();
   }
 
-  function handleClose() {
+  function handleSaveExisting(goal: Goal, name: string, timesPlanned: number) {
+    updateGoal(
+      goal.id,
+      name,
+      timesPlanned,
+      Math.min(timesPlanned, goal.timesCompleted)
+    );
+    handleCloseModal();
+  }
+
+  function handleOnTimesCompletedChanged(goal: Goal, timesCompleted: number) {
+    updateGoal(goal.id, goal.name, goal.timesPlanned, timesCompleted);
+  }
+
+  function handleCloseModal() {
+    setSelectedGoal(undefined);
     setIsGoalModalVisible(false);
   }
 
-  function handleDelete() {
-    handleClose();
+  function handleDelete(goal: Goal) {
+    deleteGoal(goal.id);
   }
 
-  function handleGoalClick() {
-    // Todo
+  function handleEdit(goal: Goal) {
+    setSelectedGoal(goal);
+    setIsGoalModalVisible(true);
   }
 
-  /** This is way too complicated lol */
-  const handleTimesCompletedChanged =
-    (goal: Goal) => (timesCompleted: number) => {
-      setGoals((prev) => {
-        return prev.map((prevGoal) => {
-          return {
-            ...prevGoal,
-            timesCompleted:
-              goal.id === prevGoal.id
-                ? timesCompleted
-                : prevGoal.timesCompleted,
-          };
-        });
-      });
-    };
+  function handleMoveLeft(goal: Goal) {
+    setGoals((prev) => {
+      const copy = [...prev];
+      const index = copy.findIndex((g) => g.id === goal.id);
+      if (index <= 0) {
+        return prev;
+      }
+      swap(copy, index, index - 1);
+      return copy;
+    });
+  }
+
+  function handleMoveRight(goal: Goal) {
+    setGoals((prev) => {
+      const copy = [...prev];
+      const index = copy.findIndex((g) => g.id === goal.id);
+      if (index === -1 || index === prev.length - 1) {
+        return prev;
+      }
+      swap(copy, index, index + 1);
+      return copy;
+    });
+  }
 
   return (
     <>
-      <h5 className={styles.header}>
+      <Title mb={30} order={2}>
         Weekly goals {allGoalsComplete && "complete 🎊"}
-      </h5>
-      <div className={styles.goalBoxesContainer}>
-        {goals.map((goal) => {
+      </Title>
+      <Group spacing="xl" mb={30}>
+        {goals.map((goal, i) => {
+          const moveLeftDisabled = i === 0;
+          const moveRightDisabled = i === goals.length - 1;
           return (
-            <GoalBoxes
-              key={goal.id}
-              goal={goal}
-              onTimesCompletedChanged={handleTimesCompletedChanged(goal)}
-              onClick={handleGoalClick}
-            />
+            <div key={goal.id}>
+              <GoalMenu
+                goal={goal}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
+                onMoveLeft={handleMoveLeft}
+                onMoveRight={handleMoveRight}
+                moveLeftDisabled={moveLeftDisabled}
+                moveRightDisabled={moveRightDisabled}
+              />
+              <GoalBoxes
+                goal={goal}
+                onTimesCompletedChanged={handleOnTimesCompletedChanged}
+              />
+            </div>
           );
         })}
-      </div>
-      <div>
-        <Button
-          variant="light"
-          size="sm"
-          onClick={() => setIsGoalModalVisible(true)}
-        >
-          + Create new goal
-        </Button>
-      </div>
+      </Group>
+      <Button
+        onClick={() => setIsGoalModalVisible(true)}
+        leftIcon={<IconPlus size={14} />}
+      >
+        Create new goal
+      </Button>
       {isGoalModalVisible && (
         <GoalModal
-          onClose={handleClose}
-          onSave={handleSave}
-          onDelete={handleDelete}
+          onClose={handleCloseModal}
+          onSaveNew={handleSaveNew}
+          onSaveExisting={handleSaveExisting}
+          goal={selectedGoal}
         />
       )}
     </>

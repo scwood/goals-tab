@@ -1,6 +1,6 @@
 export interface Goal {
   id: string;
-  title: string;
+  name: string;
   timesPlanned: number;
   timesCompleted: number;
 }

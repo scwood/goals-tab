@@ -1,6 +1,5 @@
+import { Stack, Title } from "@mantine/core";
 import { useState, useEffect } from "react";
-
-import styles from "./CurrentDateTime.module.css";
 
 export function CurrentDateTime() {
   const [now, setNow] = useState(new Date());
@@ -14,9 +13,13 @@ export function CurrentDateTime() {
   }, []);
 
   return (
-    <div className={styles.container}>
-      <h1>{now.toLocaleTimeString(undefined, { timeStyle: "short" })}</h1>
-      <h5>{now.toLocaleDateString(undefined, { dateStyle: "long" })}</h5>
-    </div>
+    <Stack spacing={0} align="center" mb={24}>
+      <Title order={1}>
+        {now.toLocaleTimeString(undefined, { timeStyle: "short" })}
+      </Title>
+      <Title order={5}>
+        {now.toLocaleDateString(undefined, { dateStyle: "long" })}
+      </Title>
+    </Stack>
   );
 }
