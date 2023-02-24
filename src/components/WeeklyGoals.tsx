@@ -115,14 +115,13 @@ export function WeeklyGoals() {
       >
         Create new goal
       </Button>
-      {isGoalModalVisible && (
-        <GoalModal
-          onClose={handleCloseModal}
-          onSaveNew={handleSaveNew}
-          onSaveExisting={handleSaveExisting}
-          goal={selectedGoal}
-        />
-      )}
+      <GoalModal
+        opened={isGoalModalVisible}
+        onClose={handleCloseModal}
+        onSaveNew={handleSaveNew}
+        onSaveExisting={handleSaveExisting}
+        goal={selectedGoal}
+      />
     </>
   );
 }

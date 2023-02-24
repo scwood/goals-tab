@@ -11,6 +11,7 @@ import {
 import { Goal } from "./Goal";
 
 export interface GoalModalProps {
+  opened: boolean;
   goal?: Goal;
   onClose: () => void;
   onSaveNew: (title: string, timesPlanned: number) => void;
@@ -18,7 +19,7 @@ export interface GoalModalProps {
 }
 
 export function GoalModal(props: GoalModalProps) {
-  const { goal, onClose, onSaveNew, onSaveExisting } = props;
+  const { opened, goal, onClose, onSaveNew, onSaveExisting } = props;
   const [name, setName] = useState(goal?.name || "");
   const [timesPlanned, setTimesPlanned] = useState<number | undefined>(
     goal?.timesPlanned
@@ -42,7 +43,7 @@ export function GoalModal(props: GoalModalProps) {
   return (
     <Modal
       title={goal ? "Edit goal" : "Create goal"}
-      opened={true}
+      opened={opened}
       onClose={onClose}
       centered
       size="xs"
